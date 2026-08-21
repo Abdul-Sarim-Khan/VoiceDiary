@@ -191,7 +191,7 @@ Name: "quicklaunchicon"; Description: "Create a Quick Launch shortcut"; GroupDes
 
 [Files]
 Source: "..\dist\VoiceDiary\*"; DestDir: "{app}"; Flags: ignoreversion recursesubdirs createallsubdirs; Excludes: "data\*.pb,data\sessions\*,data\logs\*,data\cache\*,*.log,*.tmp"
-Source: "..\Models\*"; DestDir: "{app}\Models"; Flags: ignoreversion recursesubdirs createallsubdirs
+Source: "..\Models\*"; DestDir: "{app}\Models"; Flags: ignoreversion recursesubdirs createallsubdirs; Excludes: "*.cache*,*.git*,*.tmp,*.log,*.pyc,*.metadata,CACHEDIR.TAG"
 
 [Icons]
 Name: "{group}\{#MyAppName}"; Filename: "{app}\{#MyAppExeName}"; IconFilename: "{app}\_internal\ui\static\assets\icon.ico"; AppUserModelID: "abdulsarimkhan.voicediary.app.1.2.0"
