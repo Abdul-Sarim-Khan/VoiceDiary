@@ -204,36 +204,36 @@ body { background-color: #0F172A; color: #F8FAFC; font-family: 'Segoe UI', syste
 
 with gr.Blocks(title="VoiceDiary AI — Classroom Lecture Diarization", css=custom_css, theme=gr.themes.Default(primary_hue="amber", neutral_hue="slate")) as demo:
     with gr.Column(elem_classes=["header-box"]):
-        gr.Markdown("# 🎙️ VoiceDiary")
+        gr.Markdown("# VoiceDiary")
         gr.Markdown("**Bilingual Classroom Lecture Note-Taking & Speaker Diarization AI**")
         gr.Markdown("<span class='badge'>VoiceDiary © Abdul Sarim Khan. All Rights Reserved.</span>")
 
     with gr.Row():
         with gr.Column(scale=1):
-            audio_input = gr.Audio(sources=["microphone", "upload"], type="filepath", label="🎤 Record Speech or Upload Audio File (.mp3, .wav, .m4a)")
+            audio_input = gr.Audio(sources=["microphone", "upload"], type="filepath", label="Record Speech or Upload Audio File (.mp3, .wav, .m4a)")
             
             with gr.Row():
                 model_dropdown = gr.Dropdown(
                     choices=["tiny", "base", "small", "medium", "large-v3-turbo", "distil-large-v3"],
                     value="base",
-                    label="⚡ AI Whisper Model",
+                    label="Whisper Speech Model",
                     info="Base is recommended for fast real-time bilingual lectures."
                 )
                 lang_dropdown = gr.Dropdown(
                     choices=["auto", "ur", "en"],
                     value="auto",
-                    label="🌐 Language Mode",
+                    label="Language Mode",
                     info="Auto handles mixed Urdu + English bilingual classroom speech."
                 )
 
-            submit_btn = gr.Button("🚀 Transcribe & Diarize Lecture", variant="primary", size="lg")
+            submit_btn = gr.Button("Transcribe & Diarize Lecture", variant="primary", size="lg")
 
         with gr.Column(scale=1):
-            transcript_output = gr.Markdown(label="📝 Lecture Notes & Diarized Transcript", value="*Your diarized lecture transcript will appear here...*")
+            transcript_output = gr.Markdown(label="Lecture Notes & Diarized Transcript", value="*Your diarized lecture transcript will appear here...*")
             
             with gr.Row():
-                download_md = gr.File(label="📥 Download Markdown Notes (.md)")
-                download_txt = gr.File(label="📄 Download Plain Text (.txt)")
+                download_md = gr.File(label="Download Markdown Notes (.md)")
+                download_txt = gr.File(label="Download Plain Text (.txt)")
 
     submit_btn.click(
         fn=process_audio,
