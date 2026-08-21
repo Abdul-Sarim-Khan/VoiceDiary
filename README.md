@@ -58,7 +58,7 @@ flowchart TD
     subgraph S1[" 🌐 1. WEB & CLOUD HUBS "]
         HFSpace["🤗 Hugging Face Static Space<br/>(huggingface.co/spaces/KnuckleHead1/VoiceDiary)"]:::hub
         ColabDemo["⚡ Google Colab Runner<br/>(VoiceDiary_Live_GPU_Demo.ipynb)"]:::cloud
-        GHReleases["💾 GitHub Releases<br/>(VoiceDiary_Setup_v1.2.0.exe)"]:::hub
+        GHReleases["💾 GitHub Releases<br/>(VoiceDiary-Setup v1.3.0)"]:::hub
     end
 
     subgraph S2[" 💻 2. LOCAL WINDOWS PRODUCTION APP "]
