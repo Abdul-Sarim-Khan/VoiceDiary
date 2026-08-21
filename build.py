@@ -169,8 +169,10 @@ UninstallDisplayIcon={app}\_internal\ui\static\assets\icon.ico
 WizardStyle=modern
 WizardImageFile=..\Branding\wizard_large.bmp
 WizardSmallImageFile=..\Branding\wizard_small.bmp
-Compression=lzma2/ultra64
+Compression=lzma2/max
 SolidCompression=yes
+LZMAUseSeparateProcess=yes
+LZMANumBlockThreads=6
 DiskSpanning=yes
 DiskSliceSize=max
 PrivilegesRequired=admin
@@ -335,11 +337,11 @@ def clean():
 
 
 if __name__ == '__main__':
-    parser = argparse.ArgumentParser(description='VoiceDiary Build & Setup Script')
+    parser = argparse.ArgumentParser(description='VoiceDiary Fast Incremental Build & Setup Script')
     parser.add_argument('--proto', action='store_true', help='Compile proto files only')
-    parser.add_argument('--exe', action='store_true', help='Build executable only')
-    parser.add_argument('--installer', action='store_true', help='Build exe + installer')
-    parser.add_argument('--setup', action='store_true', help='Full build: exe + installer + standalone package')
+    parser.add_argument('--exe', '--app', action='store_true', help='Build executable only in seconds (without re-compressing 5.2GB models)')
+    parser.add_argument('--quick', action='store_true', help='Quick build: Compile app and update existing setup')
+    parser.add_argument('--installer', '--setup', action='store_true', help='Full build: exe + multi-threaded Inno Setup installer')
     parser.add_argument('--clean', action='store_true', help='Clean build artifacts')
     args = parser.parse_args()
 
@@ -347,7 +349,7 @@ if __name__ == '__main__':
         clean()
     elif args.proto:
         compile_proto()
-    elif args.exe:
+    elif args.exe or args.quick:
         build_exe()
     elif args.installer or args.setup:
         if build_exe():
