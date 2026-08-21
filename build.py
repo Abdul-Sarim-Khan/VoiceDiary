@@ -171,7 +171,6 @@ WizardImageFile=..\Branding\wizard_large.bmp
 WizardSmallImageFile=..\Branding\wizard_small.bmp
 Compression=lzma2/fast
 SolidCompression=yes
-LZMAMultithreading=yes
 LZMANumBlockThreads=8
 LZMAUseSeparateProcess=yes
 DiskSpanning=yes
