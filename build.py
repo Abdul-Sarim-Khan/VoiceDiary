@@ -171,9 +171,12 @@ WizardImageFile=..\Branding\wizard_large.bmp
 WizardSmallImageFile=..\Branding\wizard_small.bmp
 Compression=lzma2/fast
 SolidCompression=yes
+LZMAMultithreading=yes
+LZMANumBlockThreads=8
 LZMAUseSeparateProcess=yes
 DiskSpanning=yes
-DiskSliceSize=max
+DiskSliceSize=1450000000
+SlicesPerDisk=1
 PrivilegesRequired=admin
 PrivilegesRequiredOverridesAllowed=dialog
 DisableDirPage=no
@@ -265,7 +268,7 @@ end;
         print(f'❌ Inno Setup compilation failed: {e}')
         return False
 
-    # User requested ONLY the single VoiceDiary-Setup.exe: purge build/, dist/, installer/
+    # Clean intermediate build, dist, and installer folders
     print('\n🧹 Cleaning intermediate build, dist, and installer folders...')
     if os.path.exists(BUILD):
         shutil.rmtree(BUILD, ignore_errors=True)
@@ -277,13 +280,18 @@ end;
     if os.path.exists(standalone_dir):
         shutil.rmtree(standalone_dir, ignore_errors=True)
 
-    setup_exe = os.path.join(SETUP, 'VoiceDiary-Setup.exe')
-    size_mb = os.path.getsize(setup_exe) / (1024 * 1024) if os.path.exists(setup_exe) else 0
-
     print('\n=============================================================')
-    print(f'🎉 CLEAN INSTALLER CREATED: setup/VoiceDiary-Setup.exe ({size_mb:.1f} MB)')
-    print('   • Ready to distribute to any Windows PC!')
-    print('   • No leftover build/ or dist/ folders remaining.')
+    print('🎉 MULTI-SLICE INSTALLER CREATED IN setup/:')
+    total_size = 0
+    if os.path.exists(SETUP):
+        for f in sorted(os.listdir(SETUP)):
+            fp = os.path.join(SETUP, f)
+            if os.path.isfile(fp):
+                sz_mb = os.path.getsize(fp) / (1024 * 1024)
+                total_size += sz_mb
+                print(f'   • {f:<30} ({sz_mb:.1f} MB)')
+    print(f'   Total Package Size: {total_size:.1f} MB ({(total_size/1024):.2f} GB)')
+    print('   • All .bin slices are <= 1.45 GB (GitHub upload friendly!)')
     print('=============================================================\n')
     return True
 
@@ -326,10 +334,9 @@ if __name__ == '__main__':
     elif args.exe or args.quick:
         build_exe()
     elif args.installer or args.setup:
-        # If dist/VoiceDiary/VoiceDiary.exe already exists, build installer directly!
-        if os.path.exists(os.path.join(DIST, 'VoiceDiary', 'VoiceDiary.exe')) or build_exe():
+        if build_exe():
             build_installer()
     else:
         # Default: full setup build
-        if os.path.exists(os.path.join(DIST, 'VoiceDiary', 'VoiceDiary.exe')) or build_exe():
+        if build_exe():
             build_installer()
