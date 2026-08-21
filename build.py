@@ -172,7 +172,7 @@ WizardSmallImageFile=..\Branding\wizard_small.bmp
 Compression=lzma2/fast
 SolidCompression=yes
 LZMAUseSeparateProcess=yes
-LZMANumBlockThreads=max
+LZMANumBlockThreads=6
 DiskSpanning=yes
 DiskSliceSize=max
 PrivilegesRequired=admin
@@ -342,6 +342,7 @@ if __name__ == '__main__':
     parser.add_argument('--exe', '--app', action='store_true', help='Build executable only in seconds (without re-compressing 5.2GB models)')
     parser.add_argument('--quick', action='store_true', help='Quick build: Compile app and update existing setup')
     parser.add_argument('--installer', '--setup', action='store_true', help='Full build: exe + multi-threaded Inno Setup installer')
+    parser.add_argument('--inno-only', '--installer-only', action='store_true', help='Run Inno Setup directly on existing dist/VoiceDiary')
     parser.add_argument('--clean', action='store_true', help='Clean build artifacts')
     args = parser.parse_args()
 
@@ -349,12 +350,15 @@ if __name__ == '__main__':
         clean()
     elif args.proto:
         compile_proto()
+    elif args.inno_only:
+        build_installer()
     elif args.exe or args.quick:
         build_exe()
     elif args.installer or args.setup:
-        if build_exe():
+        # If dist/VoiceDiary/VoiceDiary.exe already exists, build installer directly!
+        if os.path.exists(os.path.join(DIST, 'VoiceDiary', 'VoiceDiary.exe')) or build_exe():
             build_installer()
     else:
         # Default: full setup build
-        if build_exe():
+        if os.path.exists(os.path.join(DIST, 'VoiceDiary', 'VoiceDiary.exe')) or build_exe():
             build_installer()
