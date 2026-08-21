@@ -1,8 +1,8 @@
 ---
 title: VoiceDiary
 emoji: 🎙️
-colorFrom: amber
-colorTo: slate
+colorFrom: yellow
+colorTo: indigo
 sdk: static
 pinned: false
 license: mit
