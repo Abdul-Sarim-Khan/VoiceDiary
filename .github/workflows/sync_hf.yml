@@ -1,0 +1,35 @@
+name: Sync Hugging Face Space
+
+on:
+  push:
+    branches: [ main ]
+    paths:
+      - 'hf_space/**'
+      - '.github/workflows/sync_hf.yml'
+  workflow_dispatch:
+
+jobs:
+  sync-to-hf:
+    name: Sync hf_space to Hugging Face
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Push to Hugging Face Space
+        env:
+          HF_TOKEN: ${{ secrets.HF_TOKEN }}
+        if: env.HF_TOKEN != ''
+        run: |
+          git config --global user.email "abdulsarimkhan@github.com"
+          git config --global user.name "Abdul Sarim Khan"
+          
+          # Clone Space and update index.html
+          git clone https://KnuckleHead1:$HF_TOKEN@huggingface.co/spaces/KnuckleHead1/VoiceDiary /tmp/hf_space
+          cp -rf hf_space/* /tmp/hf_space/
+          
+          cd /tmp/hf_space
+          git add -A
+          git diff --quiet && git diff --staged --quiet || (git commit -m "sync: Update from GitHub main" && git push)

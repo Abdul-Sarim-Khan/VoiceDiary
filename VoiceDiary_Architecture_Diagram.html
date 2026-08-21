@@ -1,0 +1,282 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>VoiceDiary — System Architecture & Ecosystem Flowchart</title>
+    <script src="https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.min.js"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;700;800&family=Fira+Code:wght@500;600&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg: #090D16;
+            --card-bg: #0F172A;
+            --border: #1E293B;
+            --accent: #F59E0B;
+            --accent-light: #FBBF24;
+            --text-main: #F8FAFC;
+            --text-muted: #94A3B8;
+        }
+
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+
+        body {
+            font-family: 'Plus Jakarta Sans', sans-serif;
+            background-color: var(--bg);
+            color: var(--text-main);
+            min-height: 100vh;
+            padding: 40px 20px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        .header {
+            text-align: center;
+            max-width: 900px;
+            margin-bottom: 30px;
+        }
+
+        .badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            padding: 6px 16px;
+            background: rgba(245, 158, 11, 0.12);
+            border: 1px solid rgba(245, 158, 11, 0.3);
+            border-radius: 9999px;
+            color: var(--accent-light);
+            font-size: 13px;
+            font-weight: 700;
+            margin-bottom: 16px;
+        }
+
+        h1 {
+            font-size: 32px;
+            font-weight: 800;
+            letter-spacing: -0.02em;
+            margin-bottom: 10px;
+            background: linear-gradient(135deg, #FFFFFF 40%, #94A3B8 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        p.sub {
+            color: var(--text-muted);
+            font-size: 15px;
+            line-height: 1.5;
+        }
+
+        .toolbar {
+            display: flex;
+            gap: 12px;
+            margin-bottom: 24px;
+            flex-wrap: wrap;
+            justify-content: center;
+        }
+
+        .btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            padding: 10px 20px;
+            border-radius: 10px;
+            font-weight: 700;
+            font-size: 14px;
+            cursor: pointer;
+            border: none;
+            transition: all 0.2s ease;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, #F59E0B, #D97706);
+            color: #000000;
+            box-shadow: 0 0 20px rgba(245, 158, 11, 0.25);
+        }
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 0 28px rgba(245, 158, 11, 0.4);
+        }
+
+        .btn-secondary {
+            background: var(--card-bg);
+            color: var(--text-main);
+            border: 1px solid var(--border);
+        }
+        .btn-secondary:hover {
+            background: #1E293B;
+            transform: translateY(-2px);
+        }
+
+        .diagram-container {
+            background: var(--card-bg);
+            border: 1px solid var(--border);
+            border-radius: 20px;
+            padding: 40px;
+            max-width: 1200px;
+            width: 100%;
+            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
+            overflow-x: auto;
+            display: flex;
+            justify-content: center;
+        }
+
+        .footer {
+            margin-top: 40px;
+            text-align: center;
+            font-size: 13px;
+            color: var(--text-muted);
+        }
+
+        .mermaid {
+            width: 100%;
+            display: flex;
+            justify-content: center;
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <div class="badge">✨ Production Architecture & Ecosystem Map</div>
+        <h1>VoiceDiary End-to-End System Flowchart</h1>
+        <p class="sub">Complete technical architecture illustrating interactions between GitHub, Hugging Face Spaces, Google Colab T4 GPU, Gemini 2.5 Flash, and the Windows Desktop Engine.</p>
+    </div>
+
+    <div class="toolbar">
+        <button class="btn btn-primary" onclick="downloadSVG()">💾 Download as Vector SVG</button>
+        <button class="btn btn-secondary" onclick="downloadPNG()">🖼️ Download as High-Res PNG</button>
+        <button class="btn btn-secondary" onclick="window.print()">🖨️ Print / Save as PDF</button>
+    </div>
+
+    <div class="diagram-container" id="diagramWrapper">
+        <div class="mermaid" id="mermaidDiagram">
+flowchart TD
+    %% Styling Classes
+    classDef dev fill:#1E293B,stroke:#64748B,stroke-width:2px,color:#F8FAFC;
+    classDef hub fill:#0F172A,stroke:#F59E0B,stroke-width:2px,color:#FDE68A;
+    classDef cloud fill:#022C22,stroke:#10B981,stroke-width:2px,color:#A7F3D0;
+    classDef desktop fill:#1E1B4B,stroke:#6366F1,stroke-width:2px,color:#C7D2FE;
+    classDef ai fill:#3B0764,stroke:#A855F7,stroke-width:2px,color:#E9D5FF;
+
+    %% 1. DEVELOPER DEPLOYMENT FLOW
+    subgraph S1[" 💻 1. DEVELOPER SOURCE & DEPLOYMENT "]
+        LocalCode["📁 Local Working Directory<br/>(VoiceDiary)"]:::dev
+        GitPush["🚀 git push origin main"]:::dev
+        GitHub["🐙 GitHub Repository<br/>(Abdul-Sarim-Khan/VoiceDiary)"]:::dev
+        GHActions["⚙️ GitHub Actions CI<br/>(Lint, Syntax & Protobuf Tests)"]:::dev
+    end
+
+    LocalCode --> GitPush --> GitHub --> GHActions
+
+    %% 2. PUBLIC DISTRIBUTION & HOSTING
+    subgraph S2[" 🌐 2. CLOUD PLATFORMS & PORTFOLIO "]
+        HFSpace["🤗 Hugging Face Static Space<br/>(huggingface.co/spaces/KnuckleHead1/VoiceDiary)<br/>• 24/7 Global CDN Web Showcase<br/>• Interactive Lecture Simulation<br/>• Cost: 100% Free Forever"]:::hub
+        ColabDemo["⚡ Google Colab Runner<br/>(VoiceDiary_Live_GPU_Demo.ipynb)<br/>• Allocates Free NVIDIA Tesla T4 GPU<br/>• Zero Config 1-Click Run"]:::cloud
+        GHReleases["💾 GitHub Releases<br/>(VoiceDiary_Setup_v1.2.0.exe)"]:::hub
+    end
+
+    GitHub -.->|"Auto-Syncs / Deploys"| HFSpace
+    GitHub -->|"Hosts Notebook"| ColabDemo
+    GitHub -->|"Hosts .EXE Installer"| GHReleases
+
+    %% 3. VISITOR INTERACTION PATHS
+    subgraph S3[" 👥 3. END USER ENTRY POINTS "]
+        Recruiter["👨‍💼 Recruiter / Professor / User"]:::dev
+    end
+
+    Recruiter -->|"Visits Website"| HFSpace
+    HFSpace -->|"Clicks 'Open Live GPU Demo'"| ColabDemo
+    HFSpace -->|"Clicks 'Download Installer'"| GHReleases
+
+    %% 4. CLOUD GPU INFERENCE (COLAB)
+    subgraph S4[" ☁️ 4. GOOGLE COLAB FREE CLOUD EXECUTION "]
+        ColabVM["Google Cloud T4 VM<br/>(User's Free Google Quota)"]:::cloud
+        WhisperLarge["Faster-Whisper Large-v3-Turbo<br/>+ ECAPA-TDNN"]:::cloud
+        GradioLive["🌐 Live Gradio Public Web URL<br/>(https://xxxx.gradio.live)"]:::cloud
+    end
+
+    ColabDemo --> ColabVM --> WhisperLarge --> GradioLive
+    Recruiter -.->|"Tests Live in Browser (<50ms)"| GradioLive
+
+    %% 5. WINDOWS DESKTOP APP (LOCAL PRODUCTION)
+    subgraph S5[" 🖥️ 5. LOCAL WINDOWS DESKTOP APPLICATION "]
+        UserPC["💻 Student / User Laptop (Offline)"]:::desktop
+        HWDetect["⚡ HardwareManager<br/>(Auto-detects NVIDIA CUDA FP16 vs AVX2 CPU INT8)"]:::desktop
+        AudioIn["🎙️ Microphone / 📁 Audio File<br/>(80Hz Filter + Silero VAD)"]:::desktop
+        LocalInference["🧠 Local Deep Learning Engine<br/>• Whisper Bilingual Transcription<br/>• ECAPA-TDNN 192-dim Voiceprint Diarization<br/>• Binary Protobuf Storage (.pb)"]:::desktop
+        DesktopUI["🎨 Obsidian & Gold Dark GUI (pywebview)"]:::desktop
+    end
+
+    GHReleases -->|"Installs .exe"| UserPC
+    UserPC --> HWDetect --> AudioIn --> LocalInference --> DesktopUI
+
+    %% 6. GEMINI AI SUMMARIZER (OPTIONAL POST-CLASS)
+    subgraph S6[" ✨ 6. POST-LECTURE AI STUDY ENGINE "]
+        GeminiAPI["Google Gemini 2.5 Flash API<br/>(Google AI Studio)"]:::ai
+        StudyNotes["📝 Generated Study Notes<br/>• 📌 Executive Lecture Summary<br/>• 🎯 Key Concepts & Formulas<br/>• 💡 Exam Study Flashcards (Q&A)<br/>• 📋 Homework & Deadlines"]:::ai
+    end
+
+    DesktopUI -->|"User clicks 'AI Summary'"| GeminiAPI --> StudyNotes --> DesktopUI
+        </div>
+    </div>
+
+    <div class="footer">
+        VoiceDiary © 2026 Abdul Sarim Khan. All Rights Reserved.
+    </div>
+
+    <script>
+        mermaid.initialize({
+            startOnLoad: true,
+            theme: 'dark',
+            themeVariables: {
+                darkMode: true,
+                background: '#0F172A',
+                primaryColor: '#1E293B',
+                lineColor: '#F59E0B',
+                fontFamily: 'Plus Jakarta Sans, sans-serif'
+            }
+        });
+
+        function downloadSVG() {
+            const svg = document.querySelector('.mermaid svg');
+            if (!svg) { alert('Diagram still loading, please wait a moment.'); return; }
+            const svgData = new XMLSerializer().serializeToString(svg);
+            const blob = new Blob([svgData], { type: 'image/svg+xml;charset=utf-8' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = 'VoiceDiary_Architecture_Diagram.svg';
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+            URL.revokeObjectURL(url);
+        }
+
+        function downloadPNG() {
+            const svg = document.querySelector('.mermaid svg');
+            if (!svg) { alert('Diagram still loading, please wait a moment.'); return; }
+            const svgData = new XMLSerializer().serializeToString(svg);
+            const canvas = document.createElement('canvas');
+            const svgSize = svg.getBoundingClientRect();
+            const scale = 2; // High DPI
+            canvas.width = svgSize.width * scale;
+            canvas.height = svgSize.height * scale;
+            const ctx = canvas.getContext('2d');
+
+            const img = new Image();
+            img.onload = function() {
+                ctx.fillStyle = '#090D16';
+                ctx.fillRect(0, 0, canvas.width, canvas.height);
+                ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
+                const pngUrl = canvas.toDataURL('image/png');
+                const a = document.createElement('a');
+                a.href = pngUrl;
+                a.download = 'VoiceDiary_Architecture_Diagram.png';
+                document.body.appendChild(a);
+                a.click();
+                document.body.removeChild(a);
+            };
+            img.src = 'data:image/svg+xml;base64,' + btoa(unescape(encodeURIComponent(svgData)));
+        }
+    </script>
+</body>
+</html>

@@ -1,0 +1,406 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>VoiceDiary — AI Classroom Lecture & Diarization Engine</title>
+    <link rel="icon" type="image/x-icon" href="assets/icon.ico">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Fira+Code:wght@400;500;600&family=Noto+Nastaliq+Urdu:wght@400;600;700&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <header class="app-header">
+        <div class="header-left">
+            <img src="assets/logo.png" alt="VoiceDiary Logo" class="brand-logo" id="brandLogo">
+            <div class="title-container">
+                <h1 class="app-title">VoiceDiary</h1>
+                <span class="app-subtitle">AI Bilingual Lecture & Diarization Engine</span>
+            </div>
+        </div>
+        <div class="header-right">
+            <!-- Dynamic Hardware Acceleration Badge -->
+            <div class="hw-badge-pill" id="hwBadgePill" title="Dynamic Hardware Engine">
+                <span class="hw-badge-dot"></span>
+                <span id="hwBadgeText">Detecting Hardware...</span>
+            </div>
+
+            <!-- Active Model Dropdown Pill -->
+            <div class="model-pill-wrapper">
+                <button class="model-pill" id="activeModelPill" onclick="toggleModelDropdown()" title="Switch AI Transcription Model">
+                    <span class="model-pill-icon">⚡</span>
+                    <span id="activeModelName">Whisper Base</span>
+                    <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"/></svg>
+                </button>
+                <div class="model-dropdown hidden" id="modelDropdown">
+                    <button class="model-dropdown-item" onclick="selectModel('tiny')">
+                        <div>
+                            <strong>Tiny (39M)</strong>
+                            <span class="model-dropdown-desc">Ultra-fast, lowest CPU usage</span>
+                        </div>
+                    </button>
+                    <button class="model-dropdown-item active" onclick="selectModel('base')">
+                        <div>
+                            <strong>Base (74M)</strong>
+                            <span class="model-dropdown-desc">Recommended for live lectures</span>
+                        </div>
+                    </button>
+                    <button class="model-dropdown-item" onclick="selectModel('small')">
+                        <div>
+                            <strong>Small (244M)</strong>
+                            <span class="model-dropdown-desc">High Urdu + English accuracy</span>
+                        </div>
+                    </button>
+                    <button class="model-dropdown-item" onclick="selectModel('medium')">
+                        <div>
+                            <strong>Medium (769M)</strong>
+                            <span class="model-dropdown-desc">Deep Urdu & English precision</span>
+                        </div>
+                    </button>
+                    <button class="model-dropdown-item" onclick="selectModel('large-v3-turbo')">
+                        <div>
+                            <strong>Large-v3-Turbo (809M)</strong>
+                            <span class="model-dropdown-desc">SOTA Multilingual Turbo (OpenAI)</span>
+                        </div>
+                    </button>
+                    <button class="model-dropdown-item" onclick="selectModel('distil-large-v3')">
+                        <div>
+                            <strong>Distil-Whisper (756M)</strong>
+                            <span class="model-dropdown-desc">Distilled Fast (English Only)</span>
+                        </div>
+                    </button>
+                </div>
+            </div>
+
+            <!-- Language Mode Dropdown Pill -->
+            <div class="lang-pill-wrapper">
+                <button class="lang-pill" id="activeLangPill" onclick="toggleLangDropdown()" title="Switch Roman Urdu vs Pure Urdu Script">
+                    <span class="lang-pill-icon">🌐</span>
+                    <span id="activeLangName">Roman Urdu</span>
+                    <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"/></svg>
+                </button>
+                <div class="lang-dropdown hidden" id="langDropdown">
+                    <button class="lang-dropdown-item active" onclick="selectLanguage('auto')">
+                        <div>
+                            <strong>🌐 Bilingual (Urdu + English)</strong>
+                            <span class="lang-dropdown-desc">e.g. "کیسے ہیں آپ؟, Hopefully you're doing good" (Fastest)</span>
+                        </div>
+                    </button>
+                    <button class="lang-dropdown-item" onclick="selectLanguage('ur')">
+                        <div>
+                            <strong>🇵🇰 Pure Urdu Script (اردو)</strong>
+                            <span class="lang-dropdown-desc">e.g. "کیا کر رہے ہو؟ آپ کیسے ہیں"</span>
+                        </div>
+                    </button>
+                    <button class="lang-dropdown-item" onclick="selectLanguage('en')">
+                        <div>
+                            <strong>🇬🇧 English Only</strong>
+                            <span class="lang-dropdown-desc">Standard English transcripts</span>
+                        </div>
+                    </button>
+                    <button class="lang-dropdown-item" onclick="selectLanguage('roman')">
+                        <div>
+                            <strong>🔤 Roman Urdu (Latin)</strong>
+                            <span class="lang-dropdown-desc">e.g. "Kya kar rahe ho?"</span>
+                        </div>
+                    </button>
+                </div>
+            </div>
+
+            <!-- Export Notes Button -->
+            <div class="export-wrapper">
+                <button class="btn btn-ghost" id="exportBtn" onclick="toggleExportDropdown()" title="Export classroom lecture notes">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+                    <span>Export Notes</span>
+                </button>
+                <div class="export-dropdown hidden" id="exportDropdown">
+                    <button onclick="triggerGeminiSummary()" style="color: #F59E0B; font-weight: 700; border-bottom: 1px solid var(--border-subtle); margin-bottom: 4px; padding-bottom: 8px;">✨ AI Summary & Study Flashcards</button>
+                    <button onclick="triggerExport('txt')">📄 Text Document (.txt)</button>
+                    <button onclick="triggerExport('md')">📝 Markdown Lecture Notes (.md)</button>
+                    <button onclick="triggerExport('srt')">🎬 Timed Subtitles (.srt)</button>
+                    <button onclick="triggerExport('json')">📊 Structured JSON (.json)</button>
+                </div>
+            </div>
+
+            <!-- Settings Button -->
+            <button class="btn btn-ghost btn-icon-only" id="settingsBtn" onclick="openSettings()" title="Settings & Hardware">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
+            </button>
+        </div>
+    </header>
+
+    <main class="app-main">
+        <!-- Speaker Profiles Sidebar -->
+        <aside class="speaker-panel">
+            <div class="panel-header">
+                <h2>Speakers & Profiles</h2>
+                <span class="count-badge" id="speakerCount">0</span>
+            </div>
+            <div class="speaker-list" id="speakerList">
+                <div class="empty-state" id="emptySpeakers">
+                    <svg width="36" height="36" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" opacity="0.4"><path d="M12 1a3 3 0 0 0-3 3v8a3 3 0 0 0 6 0V4a3 3 0 0 0-3-3z"/><path d="M19 10v2a7 7 0 0 1-14 0v-2"/><line x1="12" y1="19" x2="12" y2="23"/><line x1="8" y1="23" x2="16" y2="23"/></svg>
+                    <p>No speakers detected</p>
+                    <p class="text-secondary">Start recording to identify professor & students</p>
+                </div>
+            </div>
+        </aside>
+
+        <!-- Classroom Notes & Live Transcription -->
+        <section class="transcript-section">
+            <div class="mode-tabs">
+                <button class="tab active" id="tabLive" onclick="switchMode('live')">🎙️ Live Classroom Lecture</button>
+                <button class="tab" id="tabFile" onclick="switchMode('file')">📁 Upload Audio File</button>
+            </div>
+
+            <div class="lecture-toolbar">
+                <div class="search-box">
+                    <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+                    <input type="text" id="searchInput" placeholder="Search topics & lecture notes..." oninput="filterTranscript()">
+                </div>
+                <div class="toolbar-actions">
+                    <button class="btn btn-ghost" onclick="copyAllNotes()" title="Copy all lecture notes with timestamps">
+                        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>
+                        <span>Copy All</span>
+                    </button>
+                    <button class="btn btn-ghost" onclick="clearTranscript()" title="Clear current session">
+                        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/></svg>
+                        <span>Clear</span>
+                    </button>
+                </div>
+            </div>
+
+            <!-- Live Transcript Area -->
+            <div class="transcript-area" id="liveArea">
+                <div class="transcript-scroll" id="transcriptScroll">
+                    <div class="transcript-list" id="transcriptList">
+                        <div class="empty-state" id="emptyTranscript">
+                            <svg width="44" height="44" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" opacity="0.4"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
+                            <p>Lecture transcript will stream here</p>
+                            <p class="text-secondary">Click the record button below to capture live classroom speech</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- File Upload Area -->
+            <div class="file-area hidden" id="fileArea" style="padding: 24px; flex: 1; display: flex; flex-direction: column;">
+                <div class="drop-zone" id="dropZone">
+                    <svg width="50" height="50" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" opacity="0.5"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
+                    <p style="font-size: 16px; font-weight: 600;">Drag & drop a recorded lecture audio file here</p>
+                    <p class="text-secondary">Supports MP3, WAV, M4A, FLAC, OGG</p>
+                    <button class="btn btn-primary" onclick="browseFile()">Select Lecture Audio File</button>
+                </div>
+                <div class="file-progress hidden" id="fileProgress" style="margin-top: 20px;">
+                    <p id="fileProgressText" style="font-weight: 600;">Processing lecture...</p>
+                    <div class="progress-bar"><div class="progress-fill" id="fileProgressBar"></div></div>
+                    <p class="text-secondary" id="fileProgressDetail"></p>
+                </div>
+                <div class="transcript-scroll" id="fileTranscriptScroll" style="flex: 1; margin-top: 15px;">
+                    <div class="transcript-list" id="fileTranscriptList"></div>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <!-- Controls Dock Island -->
+    <footer class="controls-bar">
+        <div class="controls-left">
+            <div class="audio-meter" id="audioMeter">
+                <div class="meter-bar"></div><div class="meter-bar"></div><div class="meter-bar"></div><div class="meter-bar"></div><div class="meter-bar"></div><div class="meter-bar"></div><div class="meter-bar"></div>
+            </div>
+        </div>
+        <div class="controls-center">
+            <button class="btn-control btn-stop hidden" id="stopBtn" onclick="stopRecording()" title="Stop recording">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><rect x="6" y="6" width="12" height="12" rx="2"/></svg>
+            </button>
+            <button class="btn-record" id="recordBtn" onclick="toggleRecording()" title="Start/Stop recording">
+                <div class="record-icon" id="recordIcon"></div>
+            </button>
+            <button class="btn-control btn-pause hidden" id="pauseBtn" onclick="togglePause()" title="Pause recording">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><rect x="6" y="4" width="4" height="16" rx="1"/><rect x="14" y="4" width="4" height="16" rx="1"/></svg>
+            </button>
+        </div>
+        <div class="controls-right">
+            <span class="timer" id="sessionTimer">00:00</span>
+            <span class="status-text" id="statusText">Ready</span>
+        </div>
+    </footer>
+
+    <!-- Settings Modal -->
+    <div class="modal-overlay hidden" id="settingsModal">
+        <div class="modal">
+            <div class="modal-header">
+                <h3>VoiceDiary Settings & Model Hub</h3>
+                <button class="btn-close" onclick="closeSettings()">×</button>
+            </div>
+            <div class="modal-body">
+                <div class="setting-group">
+                    <label>Microphone Audio Device</label>
+                    <select id="deviceSelect" class="select">
+                        <option value="">Default Microphone</option>
+                    </select>
+                </div>
+
+                <div class="setting-group">
+                    <label>Active Whisper AI Model</label>
+                    <p>Select your transcription engine. All models are cached offline for instant switching.</p>
+                    <div class="radio-group" id="modelRadios">
+                        <div class="radio-card" onclick="selectRadioModel('tiny')">
+                            <div class="radio-card-header">
+                                <span>Tiny (39M)</span>
+                                <span class="radio-card-status">Offline</span>
+                            </div>
+                            <span class="radio-card-desc">Ultra-fast, lowest CPU usage</span>
+                            <input type="radio" name="model" value="tiny">
+                        </div>
+                        <div class="radio-card active" onclick="selectRadioModel('base')">
+                            <div class="radio-card-header">
+                                <span>Base (74M)</span>
+                                <span class="radio-card-status">Offline</span>
+                            </div>
+                            <span class="radio-card-desc">Recommended for live lectures</span>
+                            <input type="radio" name="model" value="base" checked>
+                        </div>
+                        <div class="radio-card" onclick="selectRadioModel('small')">
+                            <div class="radio-card-header">
+                                <span>Small (244M)</span>
+                                <span class="radio-card-status">Offline</span>
+                            </div>
+                            <span class="radio-card-desc">High Urdu + English accuracy</span>
+                            <input type="radio" name="model" value="small">
+                        </div>
+                        <div class="radio-card" onclick="selectRadioModel('medium')">
+                            <div class="radio-card-header">
+                                <span>Medium (769M)</span>
+                                <span class="radio-card-status">Offline</span>
+                            </div>
+                            <span class="radio-card-desc">Deep university course precision</span>
+                            <input type="radio" name="model" value="medium">
+                        </div>
+                        <div class="radio-card" onclick="selectRadioModel('large-v3-turbo')">
+                            <div class="radio-card-header">
+                                <span>Large-v3-Turbo (809M)</span>
+                                <span class="radio-card-status">Offline</span>
+                            </div>
+                            <span class="radio-card-desc">State-of-the-Art OpenAI Turbo</span>
+                            <input type="radio" name="model" value="large-v3-turbo">
+                        </div>
+                        <div class="radio-card" onclick="selectRadioModel('distil-large-v3')">
+                            <div class="radio-card-header">
+                                <span>Distil-Whisper (756M)</span>
+                                <span class="radio-card-status">Offline</span>
+                            </div>
+                            <span class="radio-card-desc">Distilled Fast SOTA Accuracy</span>
+                            <input type="radio" name="model" value="distil-large-v3">
+                        </div>
+                    </div>
+                </div>
+
+                <div class="setting-group">
+                    <label>Language Output Mode</label>
+                    <select id="languageSelect" class="select">
+                        <option value="auto">Roman Urdu + English (Standard Academic Notes)</option>
+                        <option value="ur">Urdu Script (اردو) + English</option>
+                        <option value="en">English Only</option>
+                    </select>
+                </div>
+
+                <div class="setting-group">
+                    <label>Speaker Diarization Sensitivity (Cosine Similarity)</label>
+                    <p>Threshold for identifying speakers and distinguishing professor from students</p>
+                    <div class="slider-row">
+                        <input type="range" id="thresholdSlider" min="20" max="70" value="32" class="slider" oninput="document.getElementById('thresholdValue').textContent = (this.value/100).toFixed(2)">
+                        <span id="thresholdValue" style="font-family: monospace; font-weight: 700; min-width: 40px;">0.32</span>
+                    </div>
+                </div>
+
+                <div class="setting-group">
+                    <label>Voice Activity Detection (VAD) Sensitivity</label>
+                    <div class="slider-row">
+                        <input type="range" id="vadSlider" min="20" max="90" value="50" class="slider" oninput="document.getElementById('vadValue').textContent = (this.value/100).toFixed(2)">
+                        <span id="vadValue" style="font-family: monospace; font-weight: 700; min-width: 40px;">0.50</span>
+                    </div>
+                </div>
+
+                <div class="setting-group">
+                    <label style="display: flex; justify-content: space-between; align-items: center;">
+                        <span>✨ Google Gemini AI Key (Optional)</span>
+                        <a href="https://aistudio.google.com/app/apikey" target="_blank" style="color: #F59E0B; font-size: 11px; text-decoration: none;">Get Free Key ↗</a>
+                    </label>
+                    <p>Used for automatic post-lecture summaries, exam study flashcards, and homework extraction.</p>
+                    <input type="password" id="geminiApiKeyInput" class="input" placeholder="Paste your Gemini API Key (starts with AIzaSy...)" style="margin-top: 6px; font-family: monospace; font-size: 12px;">
+                </div>
+            </div>
+            <div class="modal-footer">
+                <span class="footer-copyright">VoiceDiary © Abdul Sarim Khan. All Rights Reserved.</span>
+                <div style="display: flex; gap: 8px;">
+                    <button class="btn btn-ghost" onclick="closeSettings()">Cancel</button>
+                    <button class="btn btn-primary" onclick="saveSettings()">Save Settings</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Model Download Progress Modal -->
+    <div class="modal-overlay" id="downloadModal" style="display:none">
+        <div class="modal modal-small">
+            <div class="modal-header"><h3>Downloading AI Model</h3></div>
+            <div class="modal-body">
+                <p id="downloadModelName" style="font-weight: 600;">Preparing model download...</p>
+                <div class="progress-bar"><div class="progress-fill" id="downloadProgress"></div></div>
+                <p class="text-secondary" id="downloadMessage">Downloading neural network weights to local cache...</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Speaker Rename Modal -->
+    <div class="modal-overlay hidden" id="renameModal">
+        <div class="modal modal-small">
+            <div class="modal-header"><h3>Rename Speaker</h3><button class="btn-close" onclick="closeRename()">×</button></div>
+            <div class="modal-body">
+                <p class="text-secondary" style="margin-bottom: 8px;">e.g. "Professor Ahmed", "Instructor", or Student Name:</p>
+                <input type="text" id="renameInput" class="input" placeholder="Enter speaker name" maxlength="50">
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-ghost" onclick="closeRename()">Cancel</button>
+                <button class="btn btn-primary" onclick="confirmRename()">Save Name</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- AI Lecture Summary & Flashcards Modal -->
+    <div class="modal-overlay hidden" id="summaryModal">
+        <div class="modal" style="max-width: 720px; width: 90%; max-height: 85vh; display: flex; flex-direction: column;">
+            <div class="modal-header">
+                <div style="display: flex; align-items: center; gap: 8px;">
+                    <span style="font-size: 20px;">✨</span>
+                    <div>
+                        <h3 style="font-size: 16px; font-weight: 700; margin: 0;">AI Lecture Summary & Study Flashcards</h3>
+                        <span style="font-size: 11px; color: #F59E0B; font-weight: 600;">Powered by Google Gemini 2.5 Flash</span>
+                    </div>
+                </div>
+                <button class="btn-close" onclick="closeSummaryModal()">×</button>
+            </div>
+            <div class="modal-body" id="summaryModalBody" style="overflow-y: auto; flex: 1; padding: 20px; line-height: 1.6; font-size: 14px;">
+                <div id="summaryLoading" style="text-align: center; padding: 40px 0;">
+                    <div style="font-size: 28px; margin-bottom: 12px; animation: spin 1s infinite linear;">⚡</div>
+                    <p style="font-weight: 600; color: #F59E0B;">Analyzing classroom lecture with Gemini 2.5 Flash...</p>
+                    <p class="text-secondary" style="font-size: 12px; margin-top: 4px;">Extracting key concepts, formulas, exam flashcards, and tasks...</p>
+                </div>
+                <div id="summaryContent" class="hidden" style="white-space: pre-wrap; font-family: inherit;"></div>
+            </div>
+            <div class="modal-footer" style="display: flex; justify-content: space-between; align-items: center;">
+                <span class="footer-copyright">VoiceDiary © Abdul Sarim Khan</span>
+                <div style="display: flex; gap: 8px;">
+                    <button class="btn btn-ghost" onclick="copySummaryText()">📋 Copy Summary</button>
+                    <button class="btn btn-primary" onclick="closeSummaryModal()">Done</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="toast-container" id="toastContainer"></div>
+    <script src="app.js"></script>
+</body>
+</html>

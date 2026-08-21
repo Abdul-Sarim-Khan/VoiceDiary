@@ -1,0 +1,30 @@
+# Python bytecode & environments
+__pycache__/
+*.py[cod]
+*$py.class
+venv/
+env/
+.env
+
+# Large AI Model weights (Bundled with offline installer)
+Models/
+
+# Build & installer artifacts
+dist/
+build/
+setup/
+*.exe
+*.bin
+*.rar
+*.zip
+
+# Local user runtime data & databases
+data/
+*.pb
+*.log
+*.tmp
+*.prof
+
+# OS specific
+.DS_Store
+Thumbs.db
