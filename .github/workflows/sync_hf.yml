@@ -21,15 +21,24 @@ jobs:
       - name: Push to Hugging Face Space
         env:
           HF_TOKEN: ${{ secrets.HF_TOKEN }}
-        if: env.HF_TOKEN != ''
         run: |
+          if [ -z "$HF_TOKEN" ]; then
+            echo "::warning::HF_TOKEN secret is not set. Add HF_TOKEN to GitHub repository secrets to enable automatic sync."
+            exit 0
+          fi
           git config --global user.email "abdulsarimkhan@github.com"
           git config --global user.name "Abdul Sarim Khan"
           
-          # Clone Space and update index.html
+          # Clone Space and update files
           git clone https://KnuckleHead1:$HF_TOKEN@huggingface.co/spaces/KnuckleHead1/VoiceDiary /tmp/hf_space
           cp -rf hf_space/* /tmp/hf_space/
           
           cd /tmp/hf_space
           git add -A
-          git diff --quiet && git diff --staged --quiet || (git commit -m "sync: Update from GitHub main" && git push)
+          if git diff --staged --quiet; then
+            echo "No changes to sync."
+          else
+            git commit -m "sync: Auto-sync from GitHub [skip ci]"
+            git push origin main
+            echo "🎉 Successfully synced to Hugging Face Space!"
+          fi
