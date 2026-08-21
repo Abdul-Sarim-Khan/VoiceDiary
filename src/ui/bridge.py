@@ -480,7 +480,8 @@ class Api:
                 return {'success': False, 'message': 'No transcript content to summarize.'}
 
             from models.gemini_summarizer import GeminiSummarizer
-            summarizer = GeminiSummarizer()
+            key = self._settings.get('gemini_api_key') if self._settings else None
+            summarizer = GeminiSummarizer(api_key=key)
             res = summarizer.summarize_lecture(transcript_data, lecture_title=lecture_title)
             return res
         except Exception as e:
@@ -640,9 +641,9 @@ class Api:
     # === Private Helpers ===
 
     def _load_settings(self):
-        """Load settings from protobuf file."""
+        """Load settings from protobuf and json files."""
         try:
-            from config import get_settings_path, DEFAULT_SIMILARITY_THRESHOLD, DEFAULT_WHISPER_MODEL
+            from config import get_settings_path, get_app_data_dir, DEFAULT_SIMILARITY_THRESHOLD, DEFAULT_WHISPER_MODEL
             path = get_settings_path()
             if path.exists():
                 from proto import voicediary_pb2
@@ -655,6 +656,7 @@ class Api:
                     'language': settings_pb.language or 'auto',
                     'vad_threshold': settings_pb.vad_threshold or 0.50,
                     'max_embeddings': settings_pb.max_embeddings or 20,
+                    'gemini_api_key': '',
                 }
             else:
                 self._settings = {
@@ -663,18 +665,30 @@ class Api:
                     'language': 'auto',
                     'vad_threshold': 0.50,
                     'max_embeddings': 20,
+                    'gemini_api_key': '',
                 }
+
+            # Load gemini_api_key from settings.json
+            json_path = get_app_data_dir() / "settings.json"
+            if json_path.exists():
+                try:
+                    s_data = json.loads(json_path.read_text(encoding="utf-8"))
+                    if "gemini_api_key" in s_data:
+                        self._settings["gemini_api_key"] = s_data["gemini_api_key"]
+                except Exception:
+                    pass
         except Exception as e:
             logger.error('Load settings error: %s', e)
             self._settings = {
                 'whisper_model': 'base', 'similarity_threshold': 0.38,
                 'language': 'auto', 'vad_threshold': 0.50, 'max_embeddings': 20,
+                'gemini_api_key': '',
             }
 
     def _save_settings(self):
-        """Save settings to protobuf file."""
+        """Save settings to protobuf and json files."""
         try:
-            from config import get_settings_path
+            from config import get_settings_path, get_app_data_dir
             from proto import voicediary_pb2
 
             settings_pb = voicediary_pb2.Settings()
@@ -688,7 +702,12 @@ class Api:
             path = get_settings_path()
             with open(str(path), 'wb') as f:
                 f.write(settings_pb.SerializeToString())
-            logger.info('Settings saved')
+
+            # Save full settings including gemini_api_key to settings.json
+            json_path = get_app_data_dir() / "settings.json"
+            json_path.write_text(json.dumps(s, indent=2, ensure_ascii=False), encoding="utf-8")
+
+            logger.info('Settings saved successfully (pb + json)')
         except Exception as e:
             logger.error('Save settings error: %s', e)
 

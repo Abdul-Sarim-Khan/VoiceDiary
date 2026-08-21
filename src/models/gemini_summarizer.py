@@ -22,14 +22,29 @@ class GeminiSummarizer:
         key = api_key
         if not key:
             try:
-                from config import get_user_data_dir
+                from pathlib import Path
+                from config import get_app_data_dir, PROJECT_ROOT
                 import json
-                settings_file = get_user_data_dir() / "settings.json"
-                if settings_file.exists():
-                    s = json.loads(settings_file.read_text(encoding="utf-8"))
-                    key = s.get("gemini_api_key", "")
-            except Exception:
-                pass
+                candidates = [
+                    get_app_data_dir() / "settings.json",
+                    PROJECT_ROOT / "data" / "settings.json",
+                ]
+                appdata = os.environ.get("APPDATA")
+                if appdata:
+                    candidates.append(Path(appdata) / "VoiceDiary" / "settings.json")
+
+                for p in candidates:
+                    if p.exists():
+                        try:
+                            s = json.loads(p.read_text(encoding="utf-8"))
+                            k = s.get("gemini_api_key", "").strip()
+                            if k:
+                                key = k
+                                break
+                        except Exception:
+                            continue
+            except Exception as e:
+                logger.debug("Failed reading settings.json for Gemini: %s", e)
 
         if not key:
             key = os.environ.get("GEMINI_API_KEY", "") or DEFAULT_GEMINI_API_KEY
