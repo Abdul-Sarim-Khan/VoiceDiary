@@ -85,9 +85,10 @@ class Api:
                     vad = VoiceActivityDetector()
                     vad._load_model()
                     self._embedder = SpeakerEmbedder()
+                    self._embedder.prewarm()
                     self._transcriber = Transcriber(model_size=model_size)
                     self._transcriber.prewarm()
-                    logger.info("Background pre-warming finished successfully (all models ready).")
+                    logger.info("Background pre-warming finished successfully (all models ready in RAM/GPU).")
                 except Exception as e:
                     logger.warning("Pre-warm warning (will load on demand): %s", e)
 

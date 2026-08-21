@@ -21,8 +21,8 @@ class AudioProcessor:
     def __init__(
         self,
         vad,
-        min_segment_ms: int = 1000,
-        max_segment_ms: int = 4000,
+        min_segment_ms: int = 800,
+        max_segment_ms: int = 3000,
         sample_rate: int = 16000
     ):
         """Initialize the audio processor."""
@@ -30,7 +30,7 @@ class AudioProcessor:
         self._sample_rate = sample_rate
         self._min_samples = int(sample_rate * min_segment_ms / 1000)
         self._max_samples = int(sample_rate * max_segment_ms / 1000)
-        self._gap_samples = int(sample_rate * 0.40)  # 400ms natural pause threshold
+        self._gap_samples = int(sample_rate * 0.28)  # 280ms natural pause threshold for snappy live feedback
 
         self._speech_chunks = []
         self._speech_samples = 0

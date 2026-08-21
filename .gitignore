@@ -7,7 +7,7 @@ env/
 .env
 
 # Large AI Model weights (Bundled with offline installer)
-Models/
+/Models/
 
 # Build & installer artifacts
 dist/
