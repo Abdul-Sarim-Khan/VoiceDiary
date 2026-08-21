@@ -915,37 +915,58 @@ function renderMarkdownToHtml(md) {
     if (!md) return '';
     state._lastSummaryRaw = md;
 
-    let html = md
+    // 1. Clean up conversational filler & empty disclaimers
+    let text = md.trim()
+        .replace(/^(?:Here are (?:the|your)|Sure,|Below is|Here is|Note:).*?$\n?/gim, '')
+        .replace(/\(No (?:mathematical|formulas|code).*?\)/gim, '')
+        .replace(/(#[^\n]+\n+)\s*---\s*\n+/g, '$1')
+        .replace(/\n{3,}/g, '\n\n')
+        .trim();
+
+    let html = text
         .replace(/&/g, '&amp;')
         .replace(/</g, '&lt;')
         .replace(/>/g, '&gt;');
 
-    // Headings
-    html = html.replace(/^### (.*$)/gim, '<h4 style="color:#FBBF24; font-size:15px; font-weight:700; margin:16px 0 8px 0; border-bottom:1px solid rgba(245,158,11,0.2); padding-bottom:4px;">$1</h4>');
-    html = html.replace(/^## (.*$)/gim, '<h3 style="color:#FFFFFF; font-size:17px; font-weight:700; margin:22px 0 10px 0; padding-bottom:6px; border-bottom:1px solid rgba(255,255,255,0.1);">$1</h3>');
-    html = html.replace(/^# (.*$)/gim, '<h2 style="color:#F59E0B; font-size:20px; font-weight:800; margin:0 0 16px 0; border-bottom:2px solid rgba(245,158,11,0.3); padding-bottom:8px;">$1</h2>');
+    // 2. Horizontal Rules
+    html = html.replace(/^\s*---\s*$/gim, '<hr style="border:none; border-top:1px solid rgba(255,255,255,0.08); margin:18px 0;">');
 
-    // Bold + Italic
+    // 3. Headings
+    html = html.replace(/^### (.*$)/gim, '<h4 style="color:#FBBF24; font-size:14.5px; font-weight:700; margin:16px 0 8px 0; border-bottom:1px solid rgba(245,158,11,0.2); padding-bottom:4px;">$1</h4>');
+    html = html.replace(/^## (.*$)/gim, '<h3 style="color:#FFFFFF; font-size:16.5px; font-weight:700; margin:22px 0 10px 0; padding-bottom:6px; border-bottom:1px solid rgba(255,255,255,0.1); display:flex; align-items:center; gap:8px;">$1</h3>');
+    html = html.replace(/^# (.*$)/gim, '<h2 style="color:#F59E0B; font-size:19px; font-weight:800; margin:0 0 14px 0; border-bottom:2px solid rgba(245,158,11,0.3); padding-bottom:8px;">$1</h2>');
+
+    // 4. Bold + Italic
     html = html.replace(/\*\*\*(.*?)\*\*\*/gim, '<strong><em>$1</em></strong>');
     html = html.replace(/\*\*(.*?)\*\*/gim, '<strong style="color:#F8FAFC; font-weight:700;">$1</strong>');
     html = html.replace(/\*(.*?)\*/gim, '<em style="color:#CBD5E1;">$1</em>');
 
-    // Code blocks & inline code
+    // 5. Code blocks & inline code
     html = html.replace(/`([^`]+)`/gim, '<code style="background:rgba(255,255,255,0.08); color:#A5B4FC; padding:2px 6px; border-radius:4px; font-family:\'Fira Code\',monospace; font-size:12px;">$1</code>');
 
-    // Lists
-    html = html.replace(/^\s*[\*\-]\s+(.*$)/gim, '<li style="margin-bottom:6px; margin-left:18px; color:#E2E8F0;">$1</li>');
-    html = html.replace(/^\s*\d+\.\s+(.*$)/gim, '<li style="margin-bottom:6px; margin-left:18px; color:#E2E8F0;">$1</li>');
+    // 6. Sleek Card Layout for Flashcards (Q & A)
+    const flashcardRegex = /^\s*[\*\-]?\s*<strong[^>]*>Q:?<\/strong>\s*(.*?)(?:\n\s*|<br>|—)\s*<strong[^>]*>A:?<\/strong>\s*(.*?)$/gim;
+    html = html.replace(
+        flashcardRegex,
+        '<div class="vd-flashcard" style="background:rgba(99,102,241,0.07); border:1px solid rgba(99,102,241,0.22); border-left:4px solid #6366F1; border-radius:10px; padding:12px 16px; margin:10px 0;">' +
+        '<div style="color:#A5B4FC; font-weight:700; font-size:13.5px; margin-bottom:4px;">💡 Q: $1</div>' +
+        '<div style="color:#F1F5F9; font-size:13px; line-height:1.6;"><strong>A:</strong> $2</div>' +
+        '</div>'
+    );
 
-    // Wrap consecutive <li> into <ul>
-    html = html.replace(/(<li.*<\/li>\s*)+/gim, '<ul style="margin:8px 0 14px 0; padding-left:4px;">$&</ul>');
+    // 7. Lists
+    html = html.replace(/^\s*[\*\-]\s+(.*$)/gim, '<li style="margin-bottom:7px; margin-left:20px; color:#E2E8F0; line-height:1.65;">$1</li>');
+    html = html.replace(/^\s*\d+\.\s+(.*$)/gim, '<li style="margin-bottom:7px; margin-left:20px; color:#E2E8F0; line-height:1.65;">$1</li>');
 
-    // Paragraphs
+    // Wrap list items into <ul>
+    html = html.replace(/(<li[\s\S]*?<\/li>(?:\s*<li[\s\S]*?<\/li>)*)/gim, '<ul style="margin:8px 0 14px 0; padding-left:4px; list-style-type:disc;">$1</ul>');
+
+    // 8. Paragraphs
     html = html.split('\n\n').map(p => {
         p = p.trim();
         if (!p) return '';
-        if (p.startsWith('<h') || p.startsWith('<ul') || p.startsWith('<div')) return p;
-        return `<p style="margin-bottom:10px; line-height:1.6; color:#CBD5E1;">${p}</p>`;
+        if (p.startsWith('<h') || p.startsWith('<ul') || p.startsWith('<div') || p.startsWith('<hr')) return p;
+        return `<p style="margin-bottom:10px; line-height:1.65; color:#CBD5E1;">${p}</p>`;
     }).join('');
 
     return html;
