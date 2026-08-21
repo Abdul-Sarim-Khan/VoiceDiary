@@ -252,71 +252,40 @@ end;
             iscc = p
             break
 
-    installer_ok = False
-    if iscc:
-        print(f'Building Inno Setup Installer using {iscc}...')
-        try:
-            subprocess.run([iscc, iss_file], check=True)
-            print('Windows Installer created successfully in setup/ directory!')
-            installer_ok = True
-        except subprocess.CalledProcessError as e:
-            print(f'Inno Setup compilation failed: {e}')
-
-    if installer_ok:
-        # User requested ONLY the single VoiceDiary-Setup.exe: purge build/, dist/, installer/
-        print('\n🧹 Cleaning intermediate build, dist, and installer folders...')
-        if os.path.exists(BUILD):
-            shutil.rmtree(BUILD, ignore_errors=True)
-        if os.path.exists(DIST):
-            shutil.rmtree(DIST, ignore_errors=True)
-        if os.path.exists(os.path.join(ROOT, 'installer')):
-            shutil.rmtree(os.path.join(ROOT, 'installer'), ignore_errors=True)
-        standalone_dir = os.path.join(SETUP, 'VoiceDiary_Standalone')
-        if os.path.exists(standalone_dir):
-            shutil.rmtree(standalone_dir, ignore_errors=True)
-
-        setup_exe = os.path.join(SETUP, 'VoiceDiary-Setup.exe')
-        size_mb = os.path.getsize(setup_exe) / (1024 * 1024) if os.path.exists(setup_exe) else 0
-
-        print('\n=============================================================')
-        print(f'🎉 CLEAN INSTALLER CREATED: setup/VoiceDiary-Setup.exe ({size_mb:.1f} MB)')
-        print('   • Ready to distribute to any Windows PC!')
-        print('   • No leftover build/ or dist/ folders remaining.')
-        print('=============================================================\n')
-        return True
-
     if not iscc:
-        # Fallback only if Inno Setup is not installed on system:
-        print('Inno Setup compiler not found. Creating portable standalone setup package...')
-        standalone_dir = os.path.join(SETUP, 'VoiceDiary_Standalone')
-        if os.path.exists(standalone_dir):
-            shutil.rmtree(standalone_dir, ignore_errors=True)
+        print('❌ ERROR: Inno Setup 6 compiler (ISCC.exe) not found!')
+        print('   Please ensure Inno Setup 6 is installed at C:\\Users\\sarim\\AppData\\Local\\Programs\\Inno Setup 6\\ISCC.exe')
+        return False
 
-        app_dist = os.path.join(DIST, 'VoiceDiary')
-        if os.path.exists(app_dist):
-            shutil.copytree(app_dist, standalone_dir)
+    print(f'Building Inno Setup Installer using {iscc}...')
+    try:
+        subprocess.run([iscc, iss_file], check=True)
+        print('Windows Installer created successfully in setup/ directory!')
+    except subprocess.CalledProcessError as e:
+        print(f'❌ Inno Setup compilation failed: {e}')
+        return False
 
-        models_src = os.path.join(ROOT, 'Models')
-        models_dst = os.path.join(standalone_dir, 'Models')
-        if os.path.exists(models_src) and not os.path.exists(models_dst):
-            print('Bundling offline AI Models into standalone package...')
-            shutil.copytree(models_src, models_dst)
+    # User requested ONLY the single VoiceDiary-Setup.exe: purge build/, dist/, installer/
+    print('\n🧹 Cleaning intermediate build, dist, and installer folders...')
+    if os.path.exists(BUILD):
+        shutil.rmtree(BUILD, ignore_errors=True)
+    if os.path.exists(DIST):
+        shutil.rmtree(DIST, ignore_errors=True)
+    if os.path.exists(os.path.join(ROOT, 'installer')):
+        shutil.rmtree(os.path.join(ROOT, 'installer'), ignore_errors=True)
+    standalone_dir = os.path.join(SETUP, 'VoiceDiary_Standalone')
+    if os.path.exists(standalone_dir):
+        shutil.rmtree(standalone_dir, ignore_errors=True)
 
-        # Clean intermediate build & dist
-        if os.path.exists(BUILD):
-            shutil.rmtree(BUILD, ignore_errors=True)
-        if os.path.exists(DIST):
-            shutil.rmtree(DIST, ignore_errors=True)
-        if os.path.exists(os.path.join(ROOT, 'installer')):
-            shutil.rmtree(os.path.join(ROOT, 'installer'), ignore_errors=True)
+    setup_exe = os.path.join(SETUP, 'VoiceDiary-Setup.exe')
+    size_mb = os.path.getsize(setup_exe) / (1024 * 1024) if os.path.exists(setup_exe) else 0
 
-        print('\n=============================================================')
-        print('🎉 STANDALONE PACKAGE READY: setup/VoiceDiary_Standalone/')
-        print('   (Install Inno Setup 6 from jrsoftware.org to compile into single VoiceDiary-Setup.exe)')
-        print('=============================================================\n')
-        return True
-
-    return False
+    print('\n=============================================================')
+    print(f'🎉 CLEAN INSTALLER CREATED: setup/VoiceDiary-Setup.exe ({size_mb:.1f} MB)')
+    print('   • Ready to distribute to any Windows PC!')
+    print('   • No leftover build/ or dist/ folders remaining.')
+    print('=============================================================\n')
+    return True
 
 
 def clean():
