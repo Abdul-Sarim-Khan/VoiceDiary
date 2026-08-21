@@ -172,7 +172,6 @@ WizardSmallImageFile=..\Branding\wizard_small.bmp
 Compression=lzma2/fast
 SolidCompression=yes
 LZMAUseSeparateProcess=yes
-LZMANumBlockThreads=6
 DiskSpanning=yes
 DiskSliceSize=max
 PrivilegesRequired=admin
@@ -286,35 +285,38 @@ end;
         print('=============================================================\n')
         return True
 
-    # Fallback only if Inno Setup is not installed on system:
-    print('Inno Setup compiler not found. Creating portable standalone setup package...')
-    standalone_dir = os.path.join(SETUP, 'VoiceDiary_Standalone')
-    if os.path.exists(standalone_dir):
-        shutil.rmtree(standalone_dir, ignore_errors=True)
+    if not iscc:
+        # Fallback only if Inno Setup is not installed on system:
+        print('Inno Setup compiler not found. Creating portable standalone setup package...')
+        standalone_dir = os.path.join(SETUP, 'VoiceDiary_Standalone')
+        if os.path.exists(standalone_dir):
+            shutil.rmtree(standalone_dir, ignore_errors=True)
 
-    app_dist = os.path.join(DIST, 'VoiceDiary')
-    if os.path.exists(app_dist):
-        shutil.copytree(app_dist, standalone_dir)
+        app_dist = os.path.join(DIST, 'VoiceDiary')
+        if os.path.exists(app_dist):
+            shutil.copytree(app_dist, standalone_dir)
 
-    models_src = os.path.join(ROOT, 'Models')
-    models_dst = os.path.join(standalone_dir, 'Models')
-    if os.path.exists(models_src) and not os.path.exists(models_dst):
-        print('Bundling offline AI Models into standalone package...')
-        shutil.copytree(models_src, models_dst)
+        models_src = os.path.join(ROOT, 'Models')
+        models_dst = os.path.join(standalone_dir, 'Models')
+        if os.path.exists(models_src) and not os.path.exists(models_dst):
+            print('Bundling offline AI Models into standalone package...')
+            shutil.copytree(models_src, models_dst)
 
-    # Clean intermediate build & dist
-    if os.path.exists(BUILD):
-        shutil.rmtree(BUILD, ignore_errors=True)
-    if os.path.exists(DIST):
-        shutil.rmtree(DIST, ignore_errors=True)
-    if os.path.exists(os.path.join(ROOT, 'installer')):
-        shutil.rmtree(os.path.join(ROOT, 'installer'), ignore_errors=True)
+        # Clean intermediate build & dist
+        if os.path.exists(BUILD):
+            shutil.rmtree(BUILD, ignore_errors=True)
+        if os.path.exists(DIST):
+            shutil.rmtree(DIST, ignore_errors=True)
+        if os.path.exists(os.path.join(ROOT, 'installer')):
+            shutil.rmtree(os.path.join(ROOT, 'installer'), ignore_errors=True)
 
-    print('\n=============================================================')
-    print('🎉 STANDALONE PACKAGE READY: setup/VoiceDiary_Standalone/')
-    print('   (Install Inno Setup 6 from jrsoftware.org to compile into single VoiceDiary-Setup.exe)')
-    print('=============================================================\n')
-    return True
+        print('\n=============================================================')
+        print('🎉 STANDALONE PACKAGE READY: setup/VoiceDiary_Standalone/')
+        print('   (Install Inno Setup 6 from jrsoftware.org to compile into single VoiceDiary-Setup.exe)')
+        print('=============================================================\n')
+        return True
+
+    return False
 
 
 def clean():
