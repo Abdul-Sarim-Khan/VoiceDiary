@@ -21,7 +21,7 @@ Experience VoiceDiary across the web, cloud, and desktop:
 |---|---|---|---|
 | **🤗 Hugging Face Spaces** | [**huggingface.co/spaces/KnuckleHead1/VoiceDiary**](https://huggingface.co/spaces/KnuckleHead1/VoiceDiary) | Official 24/7 Web Showcase & Simulation Hub | **100% Free** (Global CDN) |
 | **⚡ Google Colab GPU Demo** | [**Open in Google Colab (NVIDIA T4 GPU)**](https://colab.research.google.com/github/Abdul-Sarim-Khan/VoiceDiary/blob/main/notebooks/VoiceDiary_Live_GPU_Demo.ipynb) | Real-time `large-v3-turbo` + `ECAPA-TDNN` cloud execution | **Free Cloud GPU** (Google T4) |
-| **💾 Desktop Application** | [**Download Windows Installer (.exe)**](https://drive.google.com/drive/folders/1vhMmypM7QOni35jSjT3gTjYhKmG6qWr7?usp=sharing) | 100% Offline, Hardware-Adaptive Desktop Software | **Local Hardware** (NVIDIA/Intel/AMD) |
+| **💾 Desktop Application** | [**Download Windows Installer (.exe)**](https://github.com/Abdul-Sarim-Khan/VoiceDiary/releases) | 100% Offline, Hardware-Adaptive Desktop Software | **Local Hardware** (NVIDIA/Intel/AMD) |
 
 ---
 
