@@ -162,7 +162,7 @@ DefaultDirName={commonpf64}\{#MyAppName}
 DefaultGroupName={#MyAppName}
 AllowNoIcons=yes
 OutputDir=..\setup
-OutputBaseFilename=VoiceDiary_Setup_v{#MyAppVersion}
+OutputBaseFilename=VoiceDiary-Setup
 SetupIconFile=..\Branding\Voice Diary Icon.ico
 UninstallDisplayName={#MyAppName} - Bilingual Classroom AI & Diarization Engine
 UninstallDisplayIcon={app}\_internal\ui\static\assets\icon.ico
@@ -260,75 +260,57 @@ end;
             installer_ok = True
         except subprocess.CalledProcessError as e:
             print(f'Inno Setup compilation failed: {e}')
-    else:
-        print('Inno Setup compiler not found. Creating portable standalone setup package...')
 
-    # 2. Build Standalone Portable Setup Folder (Machine-Independent, Plug & Play)
+    if installer_ok:
+        # User requested ONLY the single VoiceDiary-Setup.exe: purge build/, dist/, installer/
+        print('\n🧹 Cleaning intermediate build, dist, and installer folders...')
+        if os.path.exists(BUILD):
+            shutil.rmtree(BUILD, ignore_errors=True)
+        if os.path.exists(DIST):
+            shutil.rmtree(DIST, ignore_errors=True)
+        if os.path.exists(os.path.join(ROOT, 'installer')):
+            shutil.rmtree(os.path.join(ROOT, 'installer'), ignore_errors=True)
+        standalone_dir = os.path.join(SETUP, 'VoiceDiary_Standalone')
+        if os.path.exists(standalone_dir):
+            shutil.rmtree(standalone_dir, ignore_errors=True)
+
+        setup_exe = os.path.join(SETUP, 'VoiceDiary-Setup.exe')
+        size_mb = os.path.getsize(setup_exe) / (1024 * 1024) if os.path.exists(setup_exe) else 0
+
+        print('\n=============================================================')
+        print(f'🎉 CLEAN INSTALLER CREATED: setup/VoiceDiary-Setup.exe ({size_mb:.1f} MB)')
+        print('   • Ready to distribute to any Windows PC!')
+        print('   • No leftover build/ or dist/ folders remaining.')
+        print('=============================================================\n')
+        return True
+
+    # Fallback only if Inno Setup is not installed on system:
+    print('Inno Setup compiler not found. Creating portable standalone setup package...')
     standalone_dir = os.path.join(SETUP, 'VoiceDiary_Standalone')
-    print(f'Packaging machine-independent standalone setup in {standalone_dir}...')
     if os.path.exists(standalone_dir):
         shutil.rmtree(standalone_dir, ignore_errors=True)
 
-    # Copy built app
     app_dist = os.path.join(DIST, 'VoiceDiary')
     if os.path.exists(app_dist):
         shutil.copytree(app_dist, standalone_dir)
 
-    # Copy offline Models
     models_src = os.path.join(ROOT, 'Models')
     models_dst = os.path.join(standalone_dir, 'Models')
     if os.path.exists(models_src) and not os.path.exists(models_dst):
         print('Bundling offline AI Models into standalone package...')
         shutil.copytree(models_src, models_dst)
 
-    # Create 1-click Desktop and Start Menu shortcut installer script
-    shortcut_vbs = os.path.join(standalone_dir, 'Create_Shortcut.vbs')
-    vbs_code = '''Set oWS = WScript.CreateObject("WScript.Shell")
-appDir = oWS.CurrentDirectory
-exePath = appDir & "\\VoiceDiary.exe"
-iconPath = appDir & "\\_internal\\ui\\static\\assets\\icon.ico"
+    # Clean intermediate build & dist
+    if os.path.exists(BUILD):
+        shutil.rmtree(BUILD, ignore_errors=True)
+    if os.path.exists(DIST):
+        shutil.rmtree(DIST, ignore_errors=True)
+    if os.path.exists(os.path.join(ROOT, 'installer')):
+        shutil.rmtree(os.path.join(ROOT, 'installer'), ignore_errors=True)
 
-' Desktop Shortcut
-desktopPath = oWS.SpecialFolders("Desktop") & "\\VoiceDiary.lnk"
-Set oLink = oWS.CreateShortcut(desktopPath)
-oLink.TargetPath = exePath
-oLink.WorkingDirectory = appDir
-oLink.Description = "VoiceDiary - Bilingual Lecture & Diarization Engine"
-oLink.IconLocation = iconPath & ", 0"
-oLink.Save
-
-' Start Menu Shortcut
-programsPath = oWS.SpecialFolders("Programs") & "\\VoiceDiary.lnk"
-Set oProgLink = oWS.CreateShortcut(programsPath)
-oProgLink.TargetPath = exePath
-oProgLink.WorkingDirectory = appDir
-oProgLink.Description = "VoiceDiary - Bilingual Lecture & Diarization Engine"
-oProgLink.IconLocation = iconPath & ", 0"
-oProgLink.Save
-
-MsgBox "VoiceDiary desktop and Start Menu shortcuts created successfully!", 64, "VoiceDiary Installation"
-'''
-    with open(shortcut_vbs, 'w', encoding='utf-8') as f:
-        f.write(vbs_code)
-
-    bat_file = os.path.join(standalone_dir, 'Install_Shortcuts.bat')
-    bat_code = '@echo off\r\nwscript.exe "%~dp0Create_Shortcut.vbs"\r\n'
-    with open(bat_file, 'w', encoding='utf-8') as f:
-        f.write(bat_code)
-
-    print('Standalone machine-independent package created successfully!')
-
-    # Print clean summary of setup/ contents
     print('\n=============================================================')
-    print('🎉 ALL SETUP & INSTALLER DELIVERABLES CREATED IN /setup :')
-    if os.path.exists(SETUP):
-        for item in sorted(os.listdir(SETUP)):
-            item_p = os.path.join(SETUP, item)
-            if os.path.isdir(item_p):
-                print(f'   📁 setup/{item}/ (Portable Standalone Package)')
-            else:
-                size_mb = os.path.getsize(item_p) / (1024 * 1024)
-                print(f'   💾 setup/{item} ({size_mb:.1f} MB Windows Setup Wizard)')
+    print('🎉 STANDALONE PACKAGE READY: setup/VoiceDiary_Standalone/')
+    print('   (Install Inno Setup 6 from jrsoftware.org to compile into single VoiceDiary-Setup.exe)')
     print('=============================================================\n')
     return True
 
