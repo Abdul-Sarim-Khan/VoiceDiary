@@ -262,7 +262,7 @@ class LivePipeline:
                     })
             else:
                 # Known speaker - Continual Learning / Adaptive Diversity Update
-                if confidence > 0.45 and segment_duration >= 1.0:
+                if segment_duration >= 0.8:
                     self._db.add_embedding(speaker_id, embedding, duration=segment_duration, confidence=confidence)
                     self._matcher.invalidate_cache()
                     
@@ -270,6 +270,14 @@ class LivePipeline:
                 if speaker_info:
                     speaker_name = speaker_info['name']
                     speaker_color = speaker_info['color']
+                    emb_count = len(speaker_info.get('embeddings', []))
+                    self._on_speaker({
+                        'id': speaker_id,
+                        'name': speaker_name,
+                        'color': speaker_color,
+                        'embedding_count': max(1, emb_count),
+                        'is_active': True
+                    })
                 else:
                     speaker_color = '#6366F1'
 
