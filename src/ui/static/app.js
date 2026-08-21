@@ -945,28 +945,28 @@ function renderMarkdownToHtml(md) {
     html = html.replace(/`([^`]+)`/gim, '<code style="background:rgba(255,255,255,0.08); color:#A5B4FC; padding:2px 6px; border-radius:4px; font-family:\'Fira Code\',monospace; font-size:12px;">$1</code>');
 
     // 6. Sleek Card Layout for Flashcards (Q & A)
-    const flashcardRegex = /^\s*[\*\-]?\s*<strong[^>]*>Q:?<\/strong>\s*(.*?)(?:\n\s*|<br>|—)\s*<strong[^>]*>A:?<\/strong>\s*(.*?)$/gim;
+    const flashcardRegex = /^\s*[\*\-•]?\s*(?:<strong[^>]*>)?Q:?(?:<\/strong>)?\s*(.*?)(?:\n\s*|<br>|—)\s*(?:<strong[^>]*>)?A:?(?:<\/strong>)?\s*(.*?)$/gim;
     html = html.replace(
         flashcardRegex,
-        '<div class="vd-flashcard" style="background:rgba(99,102,241,0.07); border:1px solid rgba(99,102,241,0.22); border-left:4px solid #6366F1; border-radius:10px; padding:12px 16px; margin:10px 0;">' +
-        '<div style="color:#A5B4FC; font-weight:700; font-size:13.5px; margin-bottom:4px;">💡 Q: $1</div>' +
-        '<div style="color:#F1F5F9; font-size:13px; line-height:1.6;"><strong>A:</strong> $2</div>' +
+        '<div class="vd-flashcard">' +
+        '<div class="vd-flashcard-q">💡 Q: $1</div>' +
+        '<div class="vd-flashcard-a"><strong>A:</strong> $2</div>' +
         '</div>'
     );
 
     // 7. Lists
-    html = html.replace(/^\s*[\*\-]\s+(.*$)/gim, '<li style="margin-bottom:7px; margin-left:20px; color:#E2E8F0; line-height:1.65;">$1</li>');
-    html = html.replace(/^\s*\d+\.\s+(.*$)/gim, '<li style="margin-bottom:7px; margin-left:20px; color:#E2E8F0; line-height:1.65;">$1</li>');
+    html = html.replace(/^\s*[\*\-•]\s+(.*$)/gim, '<li>$1</li>');
+    html = html.replace(/^\s*\d+\.\s+(.*$)/gim, '<li>$1</li>');
 
     // Wrap list items into <ul>
-    html = html.replace(/(<li[\s\S]*?<\/li>(?:\s*<li[\s\S]*?<\/li>)*)/gim, '<ul style="margin:8px 0 14px 0; padding-left:4px; list-style-type:disc;">$1</ul>');
+    html = html.replace(/(<li>[\s\S]*?<\/li>(?:\s*<li>[\s\S]*?<\/li>)*)/gim, '<ul>$1</ul>');
 
     // 8. Paragraphs
     html = html.split('\n\n').map(p => {
         p = p.trim();
         if (!p) return '';
         if (p.startsWith('<h') || p.startsWith('<ul') || p.startsWith('<div') || p.startsWith('<hr')) return p;
-        return `<p style="margin-bottom:10px; line-height:1.65; color:#CBD5E1;">${p}</p>`;
+        return `<p>${p}</p>`;
     }).join('');
 
     return html;
