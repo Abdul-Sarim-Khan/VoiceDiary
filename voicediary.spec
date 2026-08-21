@@ -142,7 +142,7 @@ exe = EXE(
     debug=False,
     bootloader_ignore_signals=False,
     strip=False,
-    upx=True,
+    upx=False,                      # Disabled for instant packaging of PyTorch & MKL DLLs
     console=False,                  # windowed (no terminal)
     disable_windowed_traceback=False,
     argv_emulation=False,
@@ -160,7 +160,7 @@ coll = COLLECT(
     a.binaries,
     a.datas,
     strip=False,
-    upx=True,
+    upx=False,
     upx_exclude=[],
     name='VoiceDiary',
 )
