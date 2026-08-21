@@ -316,6 +316,19 @@ MsgBox "VoiceDiary desktop and Start Menu shortcuts created successfully!", 64, 
         f.write(bat_code)
 
     print('Standalone machine-independent package created successfully!')
+
+    # Print clean summary of setup/ contents
+    print('\n=============================================================')
+    print('🎉 ALL SETUP & INSTALLER DELIVERABLES CREATED IN /setup :')
+    if os.path.exists(SETUP):
+        for item in sorted(os.listdir(SETUP)):
+            item_p = os.path.join(SETUP, item)
+            if os.path.isdir(item_p):
+                print(f'   📁 setup/{item}/ (Portable Standalone Package)')
+            else:
+                size_mb = os.path.getsize(item_p) / (1024 * 1024)
+                print(f'   💾 setup/{item} ({size_mb:.1f} MB Windows Setup Wizard)')
+    print('=============================================================\n')
     return True
 
 
