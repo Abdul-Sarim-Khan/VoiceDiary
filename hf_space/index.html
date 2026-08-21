@@ -1,12 +1,15 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>VoiceDiary — Classroom Lecture AI & Speaker Diarization Engine</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Fira+Code:wght@400;600&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link
+        href="https://fonts.googleapis.com/css2?family=Fira+Code:wght@400;600&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap"
+        rel="stylesheet">
     <style>
         :root {
             --bg-base: #080C14;
@@ -21,7 +24,12 @@
             --text-muted: #94A3B8;
         }
 
-        * { margin: 0; padding: 0; box-sizing: border-box; }
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
         body {
             font-family: 'Plus Jakarta Sans', sans-serif;
             background: var(--bg-base);
@@ -29,12 +37,17 @@
             min-height: 100vh;
             display: flex;
             flex-direction: column;
-            background-image: 
+            background-image:
                 radial-gradient(ellipse 80% 50% at 50% -20%, rgba(99, 102, 241, 0.18), transparent),
                 radial-gradient(ellipse 60% 40% at 50% 120%, rgba(245, 158, 11, 0.12), transparent);
         }
 
-        .container { max-width: 1100px; margin: 0 auto; padding: 40px 24px; width: 100%; }
+        .container {
+            max-width: 1100px;
+            margin: 0 auto;
+            padding: 40px 24px;
+            width: 100%;
+        }
 
         /* Header */
         header {
@@ -46,7 +59,12 @@
             margin-bottom: 40px;
         }
 
-        .logo-group { display: flex; align-items: center; gap: 14px; }
+        .logo-group {
+            display: flex;
+            align-items: center;
+            gap: 14px;
+        }
+
         .logo-icon {
             width: 44px;
             height: 44px;
@@ -59,11 +77,23 @@
             color: #080C14;
         }
 
-        .brand-title { font-size: 22px; font-weight: 800; letter-spacing: -0.02em; }
-        .brand-sub { font-size: 12px; color: var(--text-muted); }
+        .brand-title {
+            font-size: 22px;
+            font-weight: 800;
+            letter-spacing: -0.02em;
+        }
+
+        .brand-sub {
+            font-size: 12px;
+            color: var(--text-muted);
+        }
 
         /* Hero */
-        .hero { text-align: center; margin-bottom: 50px; }
+        .hero {
+            text-align: center;
+            margin-bottom: 50px;
+        }
+
         .badge {
             display: inline-flex;
             align-items: center;
@@ -104,7 +134,14 @@
         }
 
         /* Action Buttons */
-        .cta-group { display: flex; justify-content: center; gap: 16px; flex-wrap: wrap; margin-bottom: 50px; }
+        .cta-group {
+            display: flex;
+            justify-content: center;
+            gap: 16px;
+            flex-wrap: wrap;
+            margin-bottom: 50px;
+        }
+
         .btn {
             display: inline-flex;
             align-items: center;
@@ -123,14 +160,22 @@
             color: #080C14;
             box-shadow: 0 4px 20px rgba(245, 158, 11, 0.4);
         }
-        .btn-primary:hover { transform: translateY(-2px); box-shadow: 0 6px 28px rgba(245, 158, 11, 0.6); }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 28px rgba(245, 158, 11, 0.6);
+        }
 
         .btn-secondary {
             background: var(--bg-surface);
             color: var(--text-main);
             border: 1px solid var(--border);
         }
-        .btn-secondary:hover { background: rgba(255,255,255,0.06); border-color: rgba(255,255,255,0.2); }
+
+        .btn-secondary:hover {
+            background: rgba(255, 255, 255, 0.06);
+            border-color: rgba(255, 255, 255, 0.2);
+        }
 
         /* Interactive Showcase Grid */
         .showcase-card {
@@ -152,7 +197,12 @@
             margin-bottom: 20px;
         }
 
-        .transcript-stream { display: flex; flex-direction: column; gap: 14px; }
+        .transcript-stream {
+            display: flex;
+            flex-direction: column;
+            gap: 14px;
+        }
+
         .transcript-node {
             padding: 14px 18px;
             border-radius: 10px;
@@ -161,8 +211,13 @@
             border-left-width: 4px;
         }
 
-        .node-spk-1 { border-left-color: #6366F1; }
-        .node-spk-2 { border-left-color: #10B981; }
+        .node-spk-1 {
+            border-left-color: #6366F1;
+        }
+
+        .node-spk-2 {
+            border-left-color: #10B981;
+        }
 
         .node-meta {
             display: flex;
@@ -173,9 +228,19 @@
             font-weight: 700;
         }
 
-        .spk-tag-1 { color: #818CF8; }
-        .spk-tag-2 { color: #34D399; }
-        .time-tag { color: var(--text-muted); font-size: 11px; font-family: 'Fira Code', monospace; }
+        .spk-tag-1 {
+            color: #818CF8;
+        }
+
+        .spk-tag-2 {
+            color: #34D399;
+        }
+
+        .time-tag {
+            color: var(--text-muted);
+            font-size: 11px;
+            font-family: 'Fira Code', monospace;
+        }
 
         /* Feature Matrix */
         .features-grid {
@@ -191,6 +256,7 @@
             border-radius: 16px;
             padding: 24px;
         }
+
         .feature-icon-wrapper {
             width: 40px;
             height: 40px;
@@ -202,8 +268,19 @@
             margin-bottom: 14px;
             color: #F59E0B;
         }
-        .feature-box h3 { font-size: 17px; font-weight: 700; margin-bottom: 8px; color: #FFFFFF; }
-        .feature-box p { font-size: 13px; color: var(--text-muted); line-height: 1.6; }
+
+        .feature-box h3 {
+            font-size: 17px;
+            font-weight: 700;
+            margin-bottom: 8px;
+            color: #FFFFFF;
+        }
+
+        .feature-box p {
+            font-size: 13px;
+            color: var(--text-muted);
+            line-height: 1.6;
+        }
 
         footer {
             text-align: center;
@@ -215,12 +292,19 @@
         }
     </style>
 </head>
+
 <body>
     <div class="container">
         <header>
             <div class="logo-group">
                 <div class="logo-icon">
-                    <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 1a3 3 0 0 0-3 3v8a3 3 0 0 0 6 0V4a3 3 0 0 0-3-3z"></path><path d="M19 10v2a7 7 0 0 1-14 0v-2"></path><line x1="12" y1="19" x2="12" y2="23"></line><line x1="8" y1="23" x2="16" y2="23"></line></svg>
+                    <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"
+                        stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M12 1a3 3 0 0 0-3 3v8a3 3 0 0 0 6 0V4a3 3 0 0 0-3-3z"></path>
+                        <path d="M19 10v2a7 7 0 0 1-14 0v-2"></path>
+                        <line x1="12" y1="19" x2="12" y2="23"></line>
+                        <line x1="8" y1="23" x2="16" y2="23"></line>
+                    </svg>
                 </div>
                 <div>
                     <div class="brand-title">VoiceDiary</div>
@@ -228,8 +312,12 @@
                 </div>
             </div>
             <div>
-                <a href="https://github.com/Abdul-Sarim-Khan/VoiceDiary" target="_blank" class="btn btn-secondary" style="padding: 8px 16px; font-size: 13px;">
-                    <svg width="15" height="15" viewBox="0 0 24 24" fill="currentColor"><path d="M12 0C5.37 0 0 5.37 0 12c0 5.31 3.435 9.795 8.205 11.385.6.105.825-.255.825-.57 0-.285-.015-1.23-.015-2.235-3.015.555-3.795-.735-4.035-1.41-.135-.345-.72-1.41-1.23-1.695-.42-.225-1.02-.78-.015-.795.945-.015 1.62.87 1.845 1.23 1.08 1.815 2.805 1.305 3.495.99.105-.78.42-1.305.765-1.605-2.67-.3-5.46-1.335-5.46-5.925 0-1.305.465-2.385 1.23-3.225-.12-.3-.54-1.53.12-3.18 0 0 1.005-.315 3.3 1.23.96-.27 1.98-.405 3-.405s2.04.135 3 .405c2.295-1.56 3.3-1.23 3.3-1.23.66 1.65.24 2.88.12 3.18.765.84 1.23 1.905 1.23 3.225 0 4.605-2.805 5.625-5.475 5.925.435.375.81 1.095.81 2.22 0 1.605-.015 2.895-.015 3.3 0 .315.225.69.825.57A12.02 12.02 0 0024 12c0-6.63-5.37-12-12-12z"/></svg>
+                <a href="https://github.com/Abdul-Sarim-Khan/VoiceDiary" target="_blank" class="btn btn-secondary"
+                    style="padding: 8px 16px; font-size: 13px;">
+                    <svg width="15" height="15" viewBox="0 0 24 24" fill="currentColor">
+                        <path
+                            d="M12 0C5.37 0 0 5.37 0 12c0 5.31 3.435 9.795 8.205 11.385.6.105.825-.255.825-.57 0-.285-.015-1.23-.015-2.235-3.015.555-3.795-.735-4.035-1.41-.135-.345-.72-1.41-1.23-1.695-.42-.225-1.02-.78-.015-.795.945-.015 1.62.87 1.845 1.23 1.08 1.815 2.805 1.305 3.495.99.105-.78.42-1.305.765-1.605-2.67-.3-5.46-1.335-5.46-5.925 0-1.305.465-2.385 1.23-3.225-.12-.3-.54-1.53.12-3.18 0 0 1.005-.315 3.3 1.23.96-.27 1.98-.405 3-.405s2.04.135 3 .405c2.295-1.56 3.3-1.23 3.3-1.23.66 1.65.24 2.88.12 3.18.765.84 1.23 1.905 1.23 3.225 0 4.605-2.805 5.625-5.475 5.925.435.375.81 1.095.81 2.22 0 1.605-.015 2.895-.015 3.3 0 .315.225.69.825.57A12.02 12.02 0 0024 12c0-6.63-5.37-12-12-12z" />
+                    </svg>
                     <span>GitHub Repo</span>
                 </a>
             </div>
@@ -240,17 +328,28 @@
                 <span class="badge-dot"></span>
                 <span>Real-Time Bilingual Lecture Diarization (Urdu + English)</span>
             </div>
-            <h1>Automated Classroom Lecture Notes<br/>with AI Speaker Identification</h1>
-            <p>VoiceDiary leverages Faster-Whisper, SpeechBrain ECAPA-TDNN, and Silero VAD to capture, transcribe, and color-code multi-speaker lectures into structured notes with 0% latency.</p>
+            <h1>Automated Classroom Lecture Notes<br />with AI Speaker Identification</h1>
+            <p>VoiceDiary leverages Faster-Whisper, SpeechBrain ECAPA-TDNN, and Silero VAD to capture, transcribe, and
+                color-code multi-speaker lectures into structured notes with 0% latency.</p>
 
             <div class="cta-group">
-                <a href="https://colab.research.google.com/github/Abdul-Sarim-Khan/VoiceDiary/blob/main/notebooks/VoiceDiary_Live_GPU_Demo.ipynb" target="_blank" class="btn btn-primary">
-                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><polygon points="5 3 19 12 5 21 5 3"></polygon></svg>
+                <a href="https://colab.research.google.com/github/Abdul-Sarim-Khan/VoiceDiary/blob/main/notebooks/VoiceDiary_Live_GPU_Demo.ipynb"
+                    target="_blank" class="btn btn-primary">
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"
+                        stroke-linecap="round" stroke-linejoin="round">
+                        <polygon points="5 3 19 12 5 21 5 3"></polygon>
+                    </svg>
                     <span>Launch Interactive Web Demo</span>
                 </a>
-                <a href="https://drive.google.com/drive/folders/1vhMmypM7QOni35jSjT3gTjYhKmG6qWr7?usp=sharing" target="_blank" class="btn btn-secondary">
-                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="7 10 12 15 17 10"></polyline><line x1="12" y1="15" x2="12" y2="3"></line></svg>
-                    <span>Download Windows Installer (Google Drive)</span>
+                <a href="https://drive.google.com/drive/folders/1vhMmypM7QOni35jSjT3gTjYhKmG6qWr7?usp=sharing"
+                    target="_blank" class="btn btn-secondary">
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"
+                        stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+                        <polyline points="7 10 12 15 17 10"></polyline>
+                        <line x1="12" y1="15" x2="12" y2="3"></line>
+                    </svg>
+                    <span>Download Windows Installer</span>
                 </a>
             </div>
         </section>
@@ -260,10 +359,13 @@
             <div class="card-header">
                 <div>
                     <h3 style="font-size: 16px; font-weight: 700;">Live Classroom Lecture Simulation</h3>
-                    <p style="font-size: 12px; color: var(--text-muted);">Urdu + English Code-Switching with Real-Time Speaker Diarization</p>
+                    <p style="font-size: 12px; color: var(--text-muted);">Urdu + English Code-Switching with Real-Time
+                        Speaker Diarization</p>
                 </div>
-                <div style="font-family: 'Fira Code', monospace; font-size: 12px; color: #10B981; display: flex; align-items: center; gap: 6px;">
-                    <span style="display:inline-block; width:8px; height:8px; border-radius:50%; background:#10B981;"></span>
+                <div
+                    style="font-family: 'Fira Code', monospace; font-size: 12px; color: #10B981; display: flex; align-items: center; gap: 6px;">
+                    <span
+                        style="display:inline-block; width:8px; height:8px; border-radius:50%; background:#10B981;"></span>
                     <span>ENGINE ACTIVE</span>
                 </div>
             </div>
@@ -274,7 +376,8 @@
                         <span class="spk-tag-1">Professor (Speaker 1)</span>
                         <span class="time-tag">[00:04]</span>
                     </div>
-                    <p>Today we will discuss gradient descent and backpropagation in deep neural networks. Yeh concept bohot critical hai for multi-layer perceptron training.</p>
+                    <p>Today we will discuss gradient descent and backpropagation in deep neural networks. Yeh concept
+                        bohot critical hai for multi-layer perceptron training.</p>
                 </div>
 
                 <div class="transcript-node node-spk-2">
@@ -282,7 +385,8 @@
                         <span class="spk-tag-2">Student (Speaker 2)</span>
                         <span class="time-tag">[00:21]</span>
                     </div>
-                    <p>Sir, what is the mathematical difference between Stochastic Gradient Descent and Adam Optimizer?</p>
+                    <p>Sir, what is the mathematical difference between Stochastic Gradient Descent and Adam Optimizer?
+                    </p>
                 </div>
 
                 <div class="transcript-node node-spk-1">
@@ -290,7 +394,8 @@
                         <span class="spk-tag-1">Professor (Speaker 1)</span>
                         <span class="time-tag">[00:32]</span>
                     </div>
-                    <p>Good question. Adam uses adaptive moment estimation, meaning it tracks both first and second moments of the gradients to adjust learning rates dynamically.</p>
+                    <p>Good question. Adam uses adaptive moment estimation, meaning it tracks both first and second
+                        moments of the gradients to adjust learning rates dynamically.</p>
                 </div>
             </div>
         </div>
@@ -299,30 +404,57 @@
         <div class="features-grid">
             <div class="feature-box">
                 <div class="feature-icon-wrapper">
-                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="4" y="4" width="16" height="16" rx="2" ry="2"></rect><rect x="9" y="9" width="6" height="6"></rect><line x1="9" y1="1" x2="9" y2="4"></line><line x1="15" y1="1" x2="15" y2="4"></line><line x1="9" y1="20" x2="9" y2="23"></line><line x1="15" y1="20" x2="15" y2="23"></line><line x1="20" y1="9" x2="23" y2="9"></line><line x1="20" y1="14" x2="23" y2="14"></line><line x1="1" y1="9" x2="4" y2="9"></line><line x1="1" y1="14" x2="4" y2="14"></line></svg>
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <rect x="4" y="4" width="16" height="16" rx="2" ry="2"></rect>
+                        <rect x="9" y="9" width="6" height="6"></rect>
+                        <line x1="9" y1="1" x2="9" y2="4"></line>
+                        <line x1="15" y1="1" x2="15" y2="4"></line>
+                        <line x1="9" y1="20" x2="9" y2="23"></line>
+                        <line x1="15" y1="20" x2="15" y2="23"></line>
+                        <line x1="20" y1="9" x2="23" y2="9"></line>
+                        <line x1="20" y1="14" x2="23" y2="14"></line>
+                        <line x1="1" y1="9" x2="4" y2="9"></line>
+                        <line x1="1" y1="14" x2="4" y2="14"></line>
+                    </svg>
                 </div>
                 <h3>Hardware-Adaptive AI Engine</h3>
-                <p>Dynamically binds NVIDIA Tensor Cores (float16) or scales Multi-Core AVX2 INT8 vectorization for 0.2s live response on any PC.</p>
+                <p>Dynamically binds NVIDIA Tensor Cores (float16) or scales Multi-Core AVX2 INT8 vectorization for 0.2s
+                    live response on any PC.</p>
             </div>
             <div class="feature-box">
                 <div class="feature-icon-wrapper">
-                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path><circle cx="9" cy="7" r="4"></circle><path d="M23 21v-2a4 4 0 0 0-3-3.87"></path><path d="M16 3.13a4 4 0 0 1 0 7.75"></path></svg>
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path>
+                        <circle cx="9" cy="7" r="4"></circle>
+                        <path d="M23 21v-2a4 4 0 0 0-3-3.87"></path>
+                        <path d="M16 3.13a4 4 0 0 1 0 7.75"></path>
+                    </svg>
                 </div>
                 <h3>50-Voiceprint Diarization</h3>
-                <p>ECAPA-TDNN cosine matrix centroid matching identifies repeating speakers in &lt;0.1ms with clean visual color tags.</p>
+                <p>ECAPA-TDNN cosine matrix centroid matching identifies repeating speakers in &lt;0.1ms with clean
+                    visual color tags.</p>
             </div>
             <div class="feature-box">
                 <div class="feature-icon-wrapper">
-                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline><line x1="16" y1="13" x2="8" y2="13"></line><line x1="16" y1="17" x2="8" y2="17"></line><polyline points="10 9 9 9 8 9"></polyline></svg>
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
+                        <polyline points="14 2 14 8 20 8"></polyline>
+                        <line x1="16" y1="13" x2="8" y2="13"></line>
+                        <line x1="16" y1="17" x2="8" y2="17"></line>
+                        <polyline points="10 9 9 9 8 9"></polyline>
+                    </svg>
                 </div>
                 <h3>1-Click Multi-Format Export</h3>
-                <p>Instantly export classroom lectures to Markdown notes (.md), plain text transcripts (.txt), or timed subtitles (.srt).</p>
+                <p>Instantly export classroom lectures to Markdown notes (.md), plain text transcripts (.txt), or timed
+                    subtitles (.srt).</p>
             </div>
         </div>
 
         <footer>
-            <p>VoiceDiary © Abdul Sarim Khan. All Rights Reserved. | Designed for Deep Learning & Academic Excellence.</p>
+            <p>VoiceDiary © Abdul Sarim Khan. All Rights Reserved. | Designed for Deep Learning & Academic Excellence.
+            </p>
         </footer>
     </div>
 </body>
+
 </html>
