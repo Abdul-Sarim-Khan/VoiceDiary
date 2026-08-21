@@ -146,11 +146,11 @@ class SpeakerDatabase:
             self.delete_speaker(merge_id)
             return True
 
-    def add_embedding(self, speaker_id: int, embedding: np.ndarray, duration: float = 0, confidence: float = 0, max_similarity_threshold: float = 0.95) -> bool:
+    def add_embedding(self, speaker_id: int, embedding: np.ndarray, duration: float = 0, confidence: float = 0, max_similarity_threshold: float = 0.98) -> bool:
         """Adds a unique voice print embedding to the speaker's memory buffer.
         
         Ensures stored embeddings are diverse (uniqueness check). If the buffer reaches
-        MAX_EMBEDDINGS_PER_SPEAKER (100), intelligently prunes the most redundant embedding.
+        MAX_EMBEDDINGS_PER_SPEAKER (50), intelligently prunes the most redundant embedding.
         """
         with self.lock:
             speaker = self._get_speaker_proto(speaker_id)

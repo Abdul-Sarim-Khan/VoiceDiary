@@ -270,7 +270,7 @@ class LivePipeline:
                 if speaker_info:
                     speaker_name = speaker_info['name']
                     speaker_color = speaker_info['color']
-                    emb_count = len(speaker_info.get('embeddings', []))
+                    emb_count = speaker_info.get('embedding_count', 1)
                     self._on_speaker({
                         'id': speaker_id,
                         'name': speaker_name,
